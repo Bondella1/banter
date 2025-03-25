@@ -1,0 +1,8 @@
+django
+djangorestframework
+vite@latest
+psycopg2-binary
+dotenv
+react-router
+tailwind
+Pillow

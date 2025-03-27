@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'users',
     'rest_framework.authtoken',
     'listings',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

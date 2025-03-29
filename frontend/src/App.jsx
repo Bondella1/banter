@@ -1,15 +1,21 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import Header from './pages/Header';
+import ListingsPage from './pages/ListingsPage';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
-          🎉 Tailwind is Working!
-        </h1>
-        <p className="text-gray-600">
-          You're all set to style your marketplace with Tailwind CSS.
-        </p>
-      </div>
-    </div>
+    <Router>
+      <Header/> {/*static banner for all pages*/}
+      <Routes>
+        <Route path="/" element={<LandingPage />} /> {/* ✅ Landing route */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="listings" element={<ListingsPage/>} />
+      </Routes>
+    </Router>
   );
 }
 

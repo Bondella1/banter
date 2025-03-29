@@ -1,0 +1,58 @@
+/* login.module.css */
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color:#ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #e5e7eb;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.button {
+  background-color: #894668;
+  color: white;
+  padding: 0.75rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #894668;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1f2937; /* Dark gray text */
+  margin-bottom: 1.5rem;
+  text-align: center;
+}

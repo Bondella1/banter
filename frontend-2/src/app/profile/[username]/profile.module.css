@@ -1,0 +1,90 @@
+.container {
+  background-color: #ffffff;
+  color: #000000;
+  min-height: 100vh;
+  padding: 2rem;
+
+}
+
+.profileHeader {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  border: 2px solid #894668;
+  
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  
+.card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+}
+  
+.itemImage {
+width: 100%;
+object-fit: cover;
+height: 150px;
+  }
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 1.5 rem;
+  font-weight: bold;
+  color: #1f1f1f;
+}
+
+.bio {
+  font-size: 0.95 rem;
+  color: #555;
+  margin-top: 0.25rem;
+}
+ 
+.avatarSkeleton {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  animation: pulse 1.5s infinite;
+}
+
+.imageSkeleton {
+  width: 100%;
+  height: 180px;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+.textSkeleton {
+  height: 14px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {opacity: 1;}
+  50% {opacity: 0.4;}
+  100% {opacity: 1;}
+}

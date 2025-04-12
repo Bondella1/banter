@@ -8,6 +8,11 @@ class ListingListView(generics.ListAPIView):
     queryset = Listings.objects.filter(is_active=True).order_by('-created_at')
     serializer_class = ListingSerializer
 
+    def get_queryset(self):
+        seller = self.request.query_params.get('seller')
+        if seller:
+            return self.queryset.filter(seller__username=seller)
+
 class ListingDetailView(generics.RetrieveAPIView):
     #view a single listing
     queryset = Listings.objects.all()

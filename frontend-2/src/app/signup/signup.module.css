@@ -1,0 +1,119 @@
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 100px 1rem 2rem;
+}
+
+.card {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  padding-right: 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.button {
+  background-color: #894668;
+  color: white;
+  padding: 0.75rem;
+  width: 100%;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button:hover {
+  background-color: #6d3552;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.eduNote {
+  font-size: 0.875rem;
+  color: #555;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.emailContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.checkmark {
+  position: absolute;
+  right: 0.75rem;
+  color: #10b981;
+  font-weight: bold;
+  font-size: 1rem;
+  transform: translateY(-50%);
+  top: 35%;
+}
+
+.error {
+  color: #ef4444;
+  background-color: #fee2e2;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+.eyeIcon {
+  position: absolute;
+  right:1rem;
+  cursor:pointer;
+  transform: translateY(-50%);
+  top: 40%;
+  right: 0.75rem;
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.passwordwrap {
+  position: relative;
+  margin-bottom: 0.1rem;
+}
+
+.passwordChecklist {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.5rem
+}
+
+.rulepass {
+  color: green;
+}
+
+.rulefail {
+  color: red;
+}

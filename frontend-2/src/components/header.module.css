@@ -36,3 +36,40 @@
 .username {
   color: #894668;
 }
+
+.searchbar {
+  display: flex;
+  flex: 1;
+  max-width: 600px;
+  margin: 0 24px;
+  color: white;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc ;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+  background-color: white;
+}
+
+.searchbutton {
+  padding: 8px 16px;
+  background-color: white;
+  color: #555;
+  border:none ;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  border: 1px solid #ccc ;
+
+}
+
+.searchForm {
+  display: flex;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}

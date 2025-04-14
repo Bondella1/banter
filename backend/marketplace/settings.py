@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'listings',
     'orders',
     'corsheaders',
+    'campushub',
 ]
 
 MIDDLEWARE = [

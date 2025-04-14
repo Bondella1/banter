@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/users/<str:username>/', PublicUserView.as_view(), name='public-user'),
     path('api/listings/', include('listings.urls')),
     path('api/orders/', include('orders.urls')),
+    path('api/campuses/', include('campushub.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

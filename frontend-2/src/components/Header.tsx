@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import styles from './header.module.css';
 import { useEffect, useState } from 'react';
+import Dropmenu from './Dropmenu';
 
 const rotwords = ['listings', 'users', 'trends', 'styles'];
 
@@ -67,19 +68,9 @@ export default function Header() {
 
       <div className={styles.right}>
         {isAuthenticated ? (
-          <div className={styles.authContainer}>
-            {username && (
-              <button
-                className={styles.link}
-                onClick={() => router.push(`/profile/${username}`)}
-              >
-                {username}
-              </button>
-            )}
-            <button className={styles.link} onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
+          <nav>
+            <Dropmenu username={username} handleLogout={handleLogout} />
+          </nav>
         ) : (
           <>
             <button className={styles.link} onClick={() => router.push('/login')}>

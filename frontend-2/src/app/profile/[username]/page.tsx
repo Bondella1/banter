@@ -113,6 +113,7 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
       <div className={styles.tabContainer}>
         <div className={styles.tabNav}>
           <button className={`${styles.tabButton} ${activeTab === 'listings' ? styles.tabButtonActive : ''}`} onClick={() => setActiveTab('listings')}>Listings</button>
+          <button className={`${styles.tabButton} ${activeTab === 'purchases' ? styles.tabButtonActive : ''}`} onClick={() => setActiveTab('purchases')}>Purchases</button>
         </div>
 
         <div className={styles.tabContent}>

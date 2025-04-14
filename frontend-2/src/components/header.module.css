@@ -1,37 +1,37 @@
 .header {
-    width: 100%;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    z-index: 1000;
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
   }
   
-  .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #894668;
-    cursor: pointer;
-  }
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #894668;
+  cursor: pointer;
+}
   
-  .link {
-    margin-left: 1rem;
-    background: none;
-    border: none;
-    color: #894668;
-    font-weight: 500;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color 0.2s ease;
-  }
-  
-  .link:hover {
-    color: #ba6f95;
-  }
+.link {
+  margin-left: 1rem;
+  background: none;
+  border: none;
+  color: #894668;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #ba6f95;
+}
   
 .username {
   color: #894668;

@@ -19,10 +19,12 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from users.views import PublicUserView
+from django.views.generic import RedirectView
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('api/auth/', include('users.urls')),
     path('api/users/<str:username>/', PublicUserView.as_view(), name='public-user'),
     path('api/listings/', include('listings.urls')),

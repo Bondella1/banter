@@ -11,3 +11,4 @@ class CampusHubDetailView(generics.RetrieveAPIView):
     queryset = CampusHub.objects.all()
     serializer_class = CampusHubSerializer
     lookup_field = 'campus_tag'
+

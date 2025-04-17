@@ -53,7 +53,23 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
   };
 
   if (error) return <p className={styles.errorMessage}>{error}</p>;
-  if (!userInfo) return <p>Loading...</p>;
+  if (!userInfo) {
+    return(
+      <div className={styles.skeletonWrapper}>
+        <div className={styles.skeletonCover}></div>
+        <div className={styles.skeletonProfile}>
+          <div className={styles.skeletonAvatar}></div>
+          <div className={styles.skeletonText}></div>
+          <div className={styles.skeletonTextSmall}></div>
+        </div>
+        <div className={styles.skeletonGrid}>
+          {Array.from({length:6}).map((_, i) => (
+            <div key={i} className={styles.skeletonCard}></div>
+          ))}
+        </div>
+      </div>
+    )
+  };
 
   return (
     <div className={styles.container}>

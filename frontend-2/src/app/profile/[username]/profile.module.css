@@ -169,3 +169,69 @@ html, body {
   background-color: white;
   border-radius: 0;
 }
+
+.skeletonWrapper {
+  padding: 2rem;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonText {
+  border-radius: 4px;
+  background-color: #e2e2e2;
+  width: 150px;
+  height: 20px;
+  margin-bottom: 0.5rem;
+}
+
+.skeletonTextSmall {
+  width: 100px;
+  height: 14px;
+  background-color: #e2e2e2;
+  border-radius: 4px;
+}
+
+.skeletonCover {
+  height: 180px;
+  background-color: #e2e2e2;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.skeletonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.skeletonProfile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.skeletonAvatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: #e2e2e2;
+  margin-bottom: 1rem;
+}
+
+.skeletonCard {
+  height: 250px;
+  background-color: #e2e2e2;
+  border-radius: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    background-color: #e2e2e2;
+  }
+  50% {
+    background-color: #f0f0f0;
+  }
+  100% {
+    background-color: #e2e2e2;
+  }
+}

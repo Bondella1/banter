@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1> CampusHub Dashboard</h1>
+<p>Total campuses: <strong>{{ total_campuses }}</strong></p>
+
+<h3>Recently Added Campuses</h3>
+<ul>
+    {% for campus in latest %}
+        <li>{{ campus.name }} ({{ campus.campus_tag }}) - {{ campus.created_at }}</li>
+    {% endfor %}
+</ul>
+
+<p><a href="/admin/campushub/campushub/">View All Campuses</a></p>
+{% endblock %}

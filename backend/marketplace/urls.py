@@ -21,9 +21,10 @@ from django.conf import settings
 from users.views import PublicUserView
 from django.views.generic import RedirectView
 from rest_framework.authtoken.views import obtain_auth_token
+from campushub.admin import admin_site
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),
     path('', RedirectView.as_view(url='/admin/', permanent=False)),
     path('api/auth/', include('users.urls')),
     path('api/users/<str:username>/', PublicUserView.as_view(), name='public-user'),

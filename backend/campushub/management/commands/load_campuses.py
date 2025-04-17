@@ -22,7 +22,7 @@ class Command(BaseCommand):
                         campus_tag = row['campus_tag'],
                         defaults={
                             'name':row['name'],
-                            'domain': row['name'],
+                            'domain': row['domain'],
                         }
                     )
                     if created:

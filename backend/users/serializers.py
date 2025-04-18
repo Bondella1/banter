@@ -16,9 +16,11 @@ class UserSerializer(serializers.ModelSerializer):
         required=True,
         validators=[UniqueValidator(queryset=CustomUser.objects.all())]
     )
+    campus_tag = serializers.CharField(source='campus.campus_tag', read_only=True)
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'is_seller', 'profile_image', 'display_name', 'bio', 'profile_image']
+        fields = ['id', 'username', 'email', 'campus_tag','is_seller', 'profile_image', 'display_name', 'bio', 'profile_image']
         read_only_fields = ['id', 'date_joined']
         extra_kwargs = {
             'profile_image':{'required':False},

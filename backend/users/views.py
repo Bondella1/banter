@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator, default_token_generator
 from django.template.loader import render_to_string
@@ -19,8 +19,10 @@ from django.conf import settings
 from .models import CustomUser
 from .serializers import RegisterSerializer, UserSerializer, PasswordResetSerializer, PublicUserSerializer
 import logging
+from campushub.models import CampusHub
 
 logger=logging.getLogger(__name__)
+User  = get_user_model()
 
 #POST /api/auth/register/
 class RegisterView(generics.CreateAPIView):
@@ -29,50 +31,36 @@ class RegisterView(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email', '').lower()
-        if not any(email.endswith(domain) for domain in ['.edu']):
-            return Response({'error': 'Only .edu email addresses allowed.'},
+        if not email.endswith('.edu'):
+            return Response({'error': 'Only .edu email addresses are allowed.'},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        domain = email.split('@')[-1]
+        username_part = email.split('@')[0]
+
+    # Check if the domain exists in your CampusHub database
+        campus = CampusHub.objects.filter(domain__iexact=domain).first()
+        if not campus:
+            return Response({'error': 'Your school is not yet supported.'},
+                        status=status.HTTP_403_FORBIDDEN)
+
+    # Optional: Basic check to avoid generic staff/faculty-like emails
+        if any(keyword in username_part for keyword in ['admin', 'helpdesk', 'staff', 'faculty']):
+            return Response({'error': 'This appears to be a staff email. Please use a student account.'},
                             status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        
         try:
-            user = serializer.save(is_active=False)  # User inactive until verified
-            self._sendverificationemail(user, request)  # Send verification email
-    
-            return Response(
-                {'message': 'Verification email sent - check your inbox'},  #Better UX
-                status=status.HTTP_201_CREATED
-    )
+            user = serializer.save(is_active=False, campus=campus)
+            self._sendverificationemail(user, request)
+            return Response({
+                'message': 'Verification email sent - check your inbox',
+                'campus': campus.name if campus else None
+            },status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response(
-        {'error': str(e)},  
-        status=status.HTTP_500_INTERNAL_SERVER_ERROR
-    )
-    def _sendverificationemail(self,user,request):
-        try:
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            verification_url = f"http://localhost:3000/verify-email/{uid}/{token}/"(
-                reverse('verify-email', kwargs={'uidb64':uid, 'token':token})
-            )
-            html_message=render_to_string(
-                'users/emails/verify_email.html', {
-                    'user':user,
-                    'verification_url' : verification_url
-                }
-            )
-            send_mail(
-                subject='Verify your email address',
-                message=strip_tags(html_message),
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                html_message=html_message,
-                fail_silently=False
-            )
-        except Exception as e:
-            logger.error(f"Failed to send verification email: {str(e)}")
-            raise
-
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #POST login
 class LoginView(APIView):

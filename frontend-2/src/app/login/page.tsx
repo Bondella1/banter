@@ -24,6 +24,15 @@ export default function LoginPage() {
         password: formData.password,
       });
 
+      if (res.data?.token) {
+        const campusTag = res.data.user?.campus_tag;
+        if (campusTag) {
+          router.push(`/hub/${campusTag}`);
+        } else {
+          router.push(`/setup-campus`);
+        }
+      }
+
       const token = res.data.token;
       localStorage.setItem('authToken', token);
       localStorage.setItem('username', formData.username); 

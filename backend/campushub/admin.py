@@ -2,6 +2,9 @@ from django.contrib import admin
 from .models import CampusHub
 from django.urls import path
 from django.template.response import TemplateResponse
+from users.admin import CustomUserAdmin
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 
 class CampusHubAdmin(admin.ModelAdmin):
     list_display = ('name', 'campus_tag', 'domain', 'created_at')
@@ -27,5 +30,8 @@ class CustomAdminSite(admin.AdminSite):
             latest=latest,
         )
         return TemplateResponse(request, 'admin/dashboard.html', context)
+    
+CustomUser = get_user_model()
 admin_site = CustomAdminSite(name='customdomain')
-admin_site.register(CampusHub)
+admin_site.register(CampusHub, CampusHubAdmin)
+admin_site.register(CustomUser, CustomUserAdmin)

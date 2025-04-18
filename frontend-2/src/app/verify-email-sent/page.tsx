@@ -2,10 +2,12 @@
 
 import { useSearchParams } from "next/navigation";
 import styles from './verifyemailsent.module.css';
+import { useRouter } from "next/router";
 
 export default function VerifyEmailSentPage() {
     const SearchParams = useSearchParams();
-    const email = SearchParams.get('email');
+    const router = useRouter();
+    const {email, campus} = router.query;
 
     return (
         <div className={styles.container}>
@@ -14,6 +16,7 @@ export default function VerifyEmailSentPage() {
             <p className={styles.message}>
               Please check your inbox and click the link to verify your account.
             </p>
+            {campus && <p>You are regisering with <strong>{campus}</strong>.</p>}
       
             {/* Example conditional rendering */}
             <p className={styles.success}>Email successfully verified ✅</p>

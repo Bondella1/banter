@@ -66,18 +66,10 @@ export default function SignupPage() {
     }
 
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/`, formData);
-      router.push(`/verify-email-sent?email=${encodeURIComponent(formData.email)}`);
+      const res = await axios.post(`{$process.env.NEXT_PUBLIC_API_URL}/api/auth/regiser`, formData);
+      const campusName = res.data.campus
+      router.push(`/verify-email-sent?email=${encodeURIComponent(campusName || '')}`);
 
-      const loginRes = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login/`, {
-        username: formData.username,
-        password: formData.password,
-      });
-
-      const token = loginRes.data.token;
-      localStorage.setItem('authToken', token);
-
-      router.push('/setup-profile');
     } catch (err: any) {
       console.error('Signup error:', err);
 

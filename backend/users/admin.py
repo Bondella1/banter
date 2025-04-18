@@ -22,3 +22,4 @@ class CustomUserAdmin(UserAdmin):
             'fields': ('username', 'campus','email', 'password1', 'password2', 'is_seller', 'is_staff', 'is_superuser')}
         ),
     )
+

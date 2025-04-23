@@ -12,10 +12,14 @@
   }
   
 .logo {
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #894668;
   cursor: pointer;
+  background: linear-gradient(to top,#d32f2f 0% ,#e53935 15%,#f4511e 35%, #ff8c00 55% ,#ffb300 75%, #beac07 100%);
+  color: transparent;
+  background-clip: text;
+  transition: opacity 0.2s;
 }
   
 .link {

@@ -66,7 +66,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await axios.post(`{$process.env.NEXT_PUBLIC_API_URL}/api/auth/regiser`, formData);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register/`, formData);
       const campusName = res.data.campus
       router.push(`/verify-email-sent?email=${encodeURIComponent(campusName || '')}`);
 

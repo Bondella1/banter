@@ -54,7 +54,7 @@ export default function Header() {
         className={styles.left}
         onClick={() => router.push(isAuthenticated ? '/listings' : '/')}
       >
-        <span className={styles.logo}>Bart3r</span>
+        <span className={styles.logo}>bart<span className={styles.logoDigit}>3</span>r</span>
       </div>
 
       <form className={styles.searchbar} onSubmit={(e) => e.preventDefault()}>

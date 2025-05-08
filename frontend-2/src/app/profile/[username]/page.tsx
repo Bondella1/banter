@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use, useRef } from 'react';
+import React, { useEffect, useState, use, useRef } from 'react';
 import axios from 'axios';
 import { Star, Mail, MapPin, Share, Camera, Edit, Settings } from 'lucide-react';
 import styles from './profile.module.css';
@@ -51,6 +51,29 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
       console.error('Upload failed:', err);
     }
   };
+  
+  const handleListingUploadClick = () => {
+    if (isOwner && fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const handleListingUploadChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    const formData = new FormData();
+    formData.append('listing_image', e.target.files[0]);
+
+    try{
+      const res= await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/listings/${username}/upload/`,
+        formData,
+        {headers:{'Content-Type':'multipart/form-data'}}
+      );
+      setListings([...listings, res.data]);
+    } catch (err) {
+      console.error('Upload failed:', err);
+    }
+  };
+
+
 
   if (error) return <p className={styles.errorMessage}>{error}</p>;
   if (!userInfo) {
@@ -97,19 +120,6 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
                   </div>
                 )}
               </div>
-              <div className={styles.profileActions}>
-                {isOwner ? (
-                  <>
-                    <button className={styles.editButton}><Edit size={16} /> Edit</button>
-                    <button className={styles.settingsButton}><Settings size={16} /></button>
-                  </>
-                ) : (
-                  <>
-                    <button className={styles.messageButton}><Mail size={16} /> Message</button>
-                    <button className={styles.shareButton}><Share size={16} /></button>
-                  </>
-                )}
-              </div>
             </div>
           </div>
         </div>
@@ -137,7 +147,18 @@ export default function UserProfile({ params }: { params: Promise<{ username: st
             <div className={styles.listingsContainer}>
               <div className={styles.listingsHeader}>
                 <h2 className={styles.sectionTitle}>Active Listings ({listings.length})</h2>
+                {isOwner && (
+                  <button className={styles.uploadButton} onClick={handleListingUploadClick}>
+                    Upload New Listing
+                  </button>
+                )}
               </div>
+
+              <input
+              type="file"
+              ref={fileInputRef}
+              className={styles.hiddenInput}
+              onChange={handleListingUploadChange}/>
 
               <div>
                 {listings.map(item => (

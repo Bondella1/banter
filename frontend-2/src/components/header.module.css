@@ -20,17 +20,23 @@
   color: transparent;
   background-clip: text;
   transition: opacity 0.2s;
+  letter-spacing: 0.25rem;
+}
+
+.logoDigit {
+  font-size: 0.9em;
 }
   
 .link {
   margin-left: 1rem;
   background: none;
   border: none;
-  color: #894668;
+  color: #e53935;
   font-weight: 500;
   font-size: 1rem;
   cursor: pointer;
   transition: color 0.2s ease;
+  font-weight: 600;
 }
 
 .link:hover {

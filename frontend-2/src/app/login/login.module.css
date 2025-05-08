@@ -34,20 +34,18 @@
   }
   
   .button {
-    background-color: #894668;
+    background-color: #e53935;
     color: white;
     padding: 0.75rem;
     width: 100%;
     border: none;
     border-radius: 0.5rem;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: "Montserrat", sans-serif;
     cursor: pointer;
   }
   
-  .button:hover {
-    background-color: #894668;
-  }
+  
   
   .title {
     font-size: 1.75rem;

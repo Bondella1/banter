@@ -10,8 +10,8 @@ export default function LandingPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>banter</h1>
-        <p className={styles.subtitle}>buy. sell. banter.</p>
+        <h1 className={styles.title}>bart<span className={styles.logoDigit}>3</span>r</h1>
+        <p className={styles.subtitle}>buy. browse. barter.</p>
       </header>
 
       <div className={styles.buttonGroup}>

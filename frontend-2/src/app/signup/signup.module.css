@@ -18,6 +18,7 @@
   max-width: 420px;
   border: 1px solid #e5e7eb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
 }
 
 .input {
@@ -33,7 +34,7 @@
 }
 
 .button {
-  background-color: #894668;
+  background: #e53935;
   color: white;
   padding: 0.75rem;
   width: 100%;
@@ -45,9 +46,6 @@
   transition: background-color 0.2s;
 }
 
-.button:hover {
-  background-color: #6d3552;
-}
 
 .title {
   font-size: 1.75rem;

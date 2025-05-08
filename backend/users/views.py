@@ -63,38 +63,68 @@ class RegisterView(generics.CreateAPIView):
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #POST login
+#class LoginView(APIView):
+#    def post(self, request):
+#        username = request.data.get("username")
+#        password = request.data.get("password")
+
+#        if not username or not password:
+#            return Response(
+#               {"error": "Both username and password are required"},
+#              status=status.HTTP_400_BAD_REQUEST
+#            )
+
+#        user = authenticate(username=username, password=password)
+#        if not user:
+#            return Response(
+#                {"error": "Invalid credentials"},
+#                status=status.HTTP_401_UNAUTHORIZED
+#            )
+        #check for a deactivated account
+#        if not user.is_active:
+#            return Response(
+#                {"error": "Account is inactive"},
+#                status=status.HTTP_403_FORBIDDEN
+#            )
+        
+#        token, _=Token.objects.get_or_create(user=user)
+#        return Response({
+#            "token": token.key,
+#            "user": UserSerializer(user).data
+#        })
+
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get("username")
-        password = request.data.get("password")
-
-        if not username or not password:
-            return Response(
-                {"error": "Both username and password are required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        user = authenticate(username=username, password=password)
+        # For development purposes, just use the first user in the database
+        # You could replace this with any logic to pick a test user
+        user = CustomUser.objects.first()  # Or use CustomUser.objects.get(username='testuser') for a specific user
+        
         if not user:
             return Response(
-                {"error": "Invalid credentials"},
-                status=status.HTTP_401_UNAUTHORIZED
+                {"error": "No user found in the database"},
+                status=status.HTTP_404_NOT_FOUND
             )
-        #check for a deactivated account
+
+        # If you need to skip account activation check, set is_active=True manually
         if not user.is_active:
-            return Response(
-                {"error": "Account is inactive"},
-                status=status.HTTP_403_FORBIDDEN
-            )
-        
-        token, _=Token.objects.get_or_create(user=user)
+            user.is_active = True
+            user.save()
+
+        # Generate or retrieve the token for the user
+        token, _ = Token.objects.get_or_create(user=user)
+
+        # Return the token and user data (you can use a serializer to return user details)
         return Response({
             "token": token.key,
-            "user": UserSerializer(user).data
+            "user": {
+                "username": user.username,
+                "email": user.email,
+                # Add any other user fields you need here
+            }
         })
-
  #GET or PUT    
 class ProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     serializer_class = UserSerializer
 
     def get_object(self):

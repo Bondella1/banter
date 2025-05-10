@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from './dropmenu.module.css'
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 
 interface Dropmenuprops {
     username: string | null;
@@ -31,6 +32,11 @@ export default function Dropmenu({username, handleLogout}: Dropmenuprops) {
                             Profile ({username})
                         </button>
                     )}
+                    <button onClick={() => navigate('/settings')}
+                        className={styles.item}>
+                            Settings
+                        </button>
+
                     <button onClick={() => {handleLogout(); setOpen(false);}} className={styles.item}>
                         Logout
                     </button>

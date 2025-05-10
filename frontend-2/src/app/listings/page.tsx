@@ -1,34 +1,30 @@
 // app/listings/page.tsx
-import styles from './listings.module.css';
+import ListingCard from '@/components/listingCard';
+import styles from './browse.module.css';
 
-interface Listing {
+type Listing = {
   id: number;
   title: string;
   price: number;
-  image?: string;
-}
+  image: string;
+};
 
 export default async function ListingsPage() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/listings/`, {
-    cache: 'no-store',
-  });
-
+  // Fetch all listings
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/listings/`,
+    { next: { revalidate: 60 } }
+  );
   const listings: Listing[] = await res.json();
 
   return (
     <main className={styles.container}>
-      <h1 className={styles.title}>Browse Listings</h1>
-
+      <h1 className={styles.heading}>Browse Listings</h1>
       <div className={styles.grid}>
         {listings.map(listing => (
-          <div key={listing.id} className={styles.card}>
-            {listing.image && <img src={listing.image} alt={listing.title} className={styles.image} />}
-            <h2 className={styles.itemTitle}>{listing.title}</h2>
-            <p className={styles.price}>${listing.price}</p>
-          </div>
+          <ListingCard key={listing.id} listing={listing} />
         ))}
       </div>
     </main>
   );
 }
- 

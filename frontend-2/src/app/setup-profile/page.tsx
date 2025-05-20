@@ -19,8 +19,9 @@ export default function SetupProfile() {
 
   //Fetch profile info on load
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('accessToken');
     if (!token) {
+      console.log('No access token found, redirecting to login');
       router.push('/login');
       return;
     }
@@ -29,7 +30,7 @@ export default function SetupProfile() {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile/`, {
           headers: {
-            Authorization: `Token ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -40,6 +41,15 @@ export default function SetupProfile() {
         });
       } catch (err) {
         console.error('Failed to load profile', err);
+
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          console.log('Token invalid or expired, redirecting to login');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          router.push('/login');
+          return;
+        }
+
         setError('Failed to load profile.');
       } finally {
         setLoading(false);
@@ -62,14 +72,14 @@ export default function SetupProfile() {
     setSuccess('');
 
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('accessToken');
 
       await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/profile/`, {
         display_name: formData.displayName,
         bio: formData.bio,
       }, {
         headers: {
-          Authorization: `Token ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -77,6 +87,14 @@ export default function SetupProfile() {
       router.push('/listings');
     } catch (err: any) {
       console.error('Failed to update profile', err);
+
+      if (axios.isAxiosError(err) && err.response?. status === 401) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        router.push('/login');
+        return;
+      }
+      
       setError('Something went wrong. Please try again.');
     }
   };

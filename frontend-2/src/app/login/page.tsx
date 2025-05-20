@@ -5,6 +5,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import styles from './login.module.css';
 
+const API = process.env.NEXT_PUBLIC_API_URL!;
+
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -19,26 +21,28 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login/`, {
-        username: formData.username,
-        password: formData.password,
-      });
+      console.log("Login attempt with username:", formData.username);
 
-      if (res.data?.token) {
-        const campusTag = res.data.user?.campus_tag;
-        if (campusTag) {
-          router.push(`/hub/${campusTag}`);
-        } else {
-          router.push(`/setup-campus`);
+      // 1) Call the JWT obtain endpoint (no "auth" prefix, no trailing slash)
+      const { data } = await axios.post(
+        `${API}/api/token`,
+        {
+          username: formData.username,
+          password: formData.password,
         }
-      }
+      );
 
-      const token = res.data.token;
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('username', formData.username); 
+      // 2) Store tokens under the keys your AxiosProvider looks for
+      localStorage.setItem('accessToken',  data.access);
+      localStorage.setItem('refreshToken', data.refresh);
+      localStorage.setItem('username', formData.username);
 
+      // 3) Prime axios with the access token immediately
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
+      window.dispatchEvent(new Event('auth-change'));
+
+      // 4) Redirect the user (for example, to their profile setup)
       router.push('/setup-profile');
-      window.location.reload();
     } catch (err: any) {
       console.error('Login error:', err);
       setError('Invalid credentials. Please try again.');
@@ -61,7 +65,6 @@ export default function LoginPage() {
           className={styles.input}
           required
         />
-
         <input
           type="password"
           name="password"
@@ -77,3 +80,12 @@ export default function LoginPage() {
     </div>
   );
 }
+
+//if (res.data?.token) {
+        //const campusTag = res.data.user?.campus_tag;
+        //if (campusTag) {
+          //router.push(`/hub/${campusTag}`);
+        //} else {
+          //router.push(`/setup-campus`);
+        //}
+      //}

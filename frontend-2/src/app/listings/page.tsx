@@ -1,4 +1,6 @@
 // app/listings/page.tsx
+
+
 import ListingCard from '@/components/listingCard';
 import styles from './browse.module.css';
 

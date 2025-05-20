@@ -20,8 +20,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from users.views import PublicUserView
 from django.views.generic import RedirectView
-from rest_framework.authtoken.views import obtain_auth_token
 from campushub.admin import admin_site
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView, TokenRefreshView,
+)
 
 urlpatterns = [
     path('admin/', admin_site.urls),
@@ -31,6 +33,8 @@ urlpatterns = [
     path('api/listings/', include('listings.urls')),
     path('api/orders/', include('orders.urls')),
     path('api/campuses/', include('campushub.urls')),
+    path('api/token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

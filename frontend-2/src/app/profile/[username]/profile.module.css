@@ -266,44 +266,6 @@ html, body {
   margin-top: 20px;
 }
 
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 16px;
-}
-
-.modal {
-  background-color: #fff;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid #f0f2f5;
-}
-
-.modalHeader h2 {
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0;
-  color: #333;
-}
 
 .closeButton {
   background: none;
@@ -314,9 +276,6 @@ html, body {
   line-height: 1;
 }
 
-.modalBody {
-  padding: 24px;
-}
 
 .formGroup {
   margin-bottom: 20px;
@@ -387,14 +346,6 @@ html, body {
   height: 100%;
   object-fit: contain;
   border-radius: 6px;
-}
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 24px;
-  border-top: 1px solid #f0f2f5;
 }
 
 .cancelButton {

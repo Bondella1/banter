@@ -18,7 +18,7 @@ export default function ListingCard({ listing }: Props) {
     <Link href={`/listings/${listing.id}`} className={styles.card}>
       <div className={styles.imageWrapper}>
         <img
-          src={listing.image}
+          src={listing.image.startsWith('http') ? listing.image: `http://localhost:8000${listing.image}`}
           alt={listing.title}
           className={styles.image}
         />

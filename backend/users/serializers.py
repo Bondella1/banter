@@ -12,6 +12,7 @@ import re
 
 class UserSerializer(serializers.ModelSerializer):
     #for viewing and updating user profile
+    profileCompleted = serializers.SerializerMethodField()
     email = serializers.EmailField(
         required=True,
         validators=[UniqueValidator(queryset=CustomUser.objects.all())]
@@ -20,12 +21,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'campus_tag','is_seller', 'profile_image', 'display_name', 'bio', 'profile_image']
+        fields = ['id', 'username', 'email', 'campus_tag','is_seller', 'profile_image', 'display_name', 'bio', 'profileCompleted']
         read_only_fields = ['id', 'date_joined']
         extra_kwargs = {
             'profile_image':{'required':False},
             'bio': {'required': False, 'allow_blank':True }
         }
+        
+    def get_profileCompleted(self, obj):
+        required_fields = ['username', 'email', 'campus', 'profileCompleted']
+        return all(getattr(obj, field, None) for field in required_fields)
+    
     def validate_email(self,value):
         try:
             validate_email(value)

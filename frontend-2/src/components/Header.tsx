@@ -35,17 +35,39 @@ export default function Header() {
   }, [charIndex, wordIndex]); 
   
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const storedUsername = localStorage.getItem('username');
-    setIsAuthenticated(!!token);
-    setUsername(storedUsername);
+    console.log("All localStorage keys:", Object.keys(localStorage));
+
+    const checkAuthStatus = () => {
+      const token = localStorage.getItem('accessToken');
+      const storedUsername = localStorage.getItem('username');
+      setIsAuthenticated(!!token);
+      setUsername(storedUsername);
+    };
+    checkAuthStatus();
+    window.addEventListener('storage', checkAuthStatus);
+    window.addEventListener('auth-change', checkAuthStatus);
+
+    return() => {
+      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener('auth-change', checkAuthStatus);
+    };
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
+    window.dispatchEvent(new Event('auth-change'));
     router.push('/');
-    window.location.reload(); // Refresh to update UI
+  };
+
+  const handleProfileClick = ()=> {
+    if (username) {
+      router.push(`/profile/${username}`);
+    } else {
+      console.error('No username available for nav');
+      router.push('/login');
+    }
   };
 
   return (
@@ -68,7 +90,13 @@ export default function Header() {
 
       <div className={styles.right}>
         {isAuthenticated ? (
-          <nav>
+          <nav className={styles.navMenu}>
+            <button 
+              className={styles.link} 
+              onClick={handleProfileClick}
+            >
+              Profile
+            </button>
             <Dropmenu username={username} handleLogout={handleLogout} />
           </nav>
         ) : (

@@ -25,16 +25,14 @@ interface Purchase {
   listing: Listing;
 }
 
-const queryClient = new QueryClient();
-
-export default function RootLayout({ children}: {children: React.ReactNode}) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false}/>
-    </QueryClientProvider>
-  )
-}
+const queryClient = new QueryClient({
+  defaultOptions:{
+    queries:{
+      retry:1,
+      refetchOnWindowFocus:false,
+    },
+  },
+});
 
 const fetchUserInfo = async (username: string) => {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}/`);

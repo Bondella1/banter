@@ -3,6 +3,8 @@
 import { ReactNode, useEffect, createContext, useContext, useState } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const API = process.env.NEXT_PUBLIC_API_URL!;
 
@@ -32,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
 export const useAuth = () => useContext(AuthContext);
 
 export function AxiosProvider({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(()=> new QueryClient());
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -139,16 +142,19 @@ export function AxiosProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        loading, 
-        logout: handleLogout, 
-        login: handleLogin,
-        isAuthenticated 
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <AuthContext.Provider 
+        value={{ 
+          user, 
+          loading, 
+          logout: handleLogout, 
+          login: handleLogin,
+          isAuthenticated 
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }

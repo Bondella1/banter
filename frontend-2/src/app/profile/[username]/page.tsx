@@ -1,11 +1,14 @@
+// src/app/profile/[username]/page.tsx
 import UserProfile from "./UserProfileClient";
 
 type PageProps = {
-  params: {
-    username: string;
-  };
+  // Next.js now gives you `params` as a Promise
+  params: Promise<{ username: string }>;
 };
 
-export default function Page({ params }: PageProps) {
-  return <UserProfile username={params.username}/>;
+export default async function Page({ params }: PageProps) {
+  // await the params before using them
+  const { username } = await params;
+
+  return <UserProfile username={username} />;
 }

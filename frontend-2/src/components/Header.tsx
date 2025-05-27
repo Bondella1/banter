@@ -1,11 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import styles from './header.module.css';
-import { useEffect, useState } from 'react';
-import Dropmenu from './Dropmenu';
+import { useCallback, useEffect, useState } from 'react';
+import { ShoppingBag, User, Heart } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 const rotwords = ['listings', 'users', 'trends', 'styles'];
+const Dropmenu = dynamic(() =>import('./Dropmenu'), {ssr:false});
 
 export default function Header() {
   const [typedText, setTypedText] = useState('');
@@ -16,9 +19,9 @@ export default function Header() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
 
+  //typewriter effect
   useEffect(() => {
     const currWord = rotwords[wordIndex];
-
     if (charIndex <= currWord.length) {
       const typing = setTimeout(() => {
         setTypedText(currWord.slice(0, charIndex));
@@ -34,6 +37,7 @@ export default function Header() {
     }
   }, [charIndex, wordIndex]); 
   
+  //Auth check
   useEffect(() => {
     console.log("All localStorage keys:", Object.keys(localStorage));
 
@@ -53,33 +57,48 @@ export default function Header() {
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('username');
     window.dispatchEvent(new Event('auth-change'));
     router.push('/');
-  };
+  }, [router]);
 
-  const handleProfileClick = ()=> {
+  const handleProfileClick = useCallback(()=> {
     if (username) {
       router.push(`/profile/${username}`);
     } else {
       console.error('No username available for nav');
       router.push('/login');
     }
-  };
+  }, [router, username]);
+
+  const handleLogoClick = useCallback(() => {
+    router.push(isAuthenticated? '/listings': '/');
+  }, [router, isAuthenticated]);
+
+  const handleCartClick = useCallback(() => {
+    router.push('/cart');
+  }, [router]);
+
+  const handleFaveClick = useCallback(() => {
+    router.push('/favorites');
+  }, [router]);
 
   return (
-    <header className={styles.header}>
+    <header className={styles.header} role="banner">
       <div
         className={styles.left}
-        onClick={() => router.push(isAuthenticated ? '/listings' : '/')}
+        onClick={handleLogoClick}
+        role='button'
+        tabIndex={0}
+        aria-label='go home'
       >
         <span className={styles.logo}>bart<span className={styles.logoDigit}>3</span>r</span>
       </div>
-
-      <form className={styles.searchbar} onSubmit={(e) => e.preventDefault()}>
+      {/*search bar*/}
+      <form className={styles.searchbar} onSubmit={(e) => e.preventDefault()} role='search' aria-label='search listings'>
         <input
           type='text'
           placeholder={`Search ${typedText}|...`}
@@ -87,26 +106,37 @@ export default function Header() {
         />
         <button type='submit' className={styles.searchbutton}>Search</button>
       </form>
-
+      {/*navbar*/}
       <div className={styles.right}>
         {isAuthenticated ? (
           <nav className={styles.navMenu}>
             <button 
-              className={styles.link} 
+              className={styles.iconButton}
+              onClick={handleFaveClick}>
+                <Heart size={24}/>
+              </button>
+              <button
+                className={styles.iconButton}
+                onClick={handleCartClick}>
+                  <ShoppingBag size={24}/>
+                </button>
+            <button 
+              className={styles.iconButton} 
               onClick={handleProfileClick}
+              aria-label="Go to your profile"
             >
-              Profile
+              <User size={24}/>
             </button>
             <Dropmenu username={username} handleLogout={handleLogout} />
           </nav>
         ) : (
           <>
-            <button className={styles.link} onClick={() => router.push('/login')}>
+            <Link href="/login" className={styles.link}>
               Login
-            </button>
-            <button className={styles.link} onClick={() => router.push('/signup')}>
+            </Link>
+            <Link href="/signup" className={styles.link}>
               Sign Up
-            </button>
+            </Link>
           </>
         )}
       </div>

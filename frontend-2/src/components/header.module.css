@@ -83,3 +83,12 @@
   max-width: 600px;
   margin: 0 auto;
 }
+
+.iconButton {
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: inline-block;
+  align-items: normal;
+  justify-content: center;
+}

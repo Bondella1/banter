@@ -8,11 +8,9 @@ export async function login(username: string, password: string) {
   localStorage.setItem('accessToken', data.access);
   localStorage.setItem('refreshToken', data.refresh);
   // set default header
-  axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 }
 
 export function logout() {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('refreshToken');
-  delete axios.defaults.headers.common['Authorization'];
 }

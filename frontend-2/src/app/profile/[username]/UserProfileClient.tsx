@@ -1,45 +1,104 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'next/navigation';
 import axios from 'axios';
-import { Star, Mail, MapPin, Share, Camera, Edit, Settings } from 'lucide-react';
+import { MapPin, Camera} from 'lucide-react';
 import styles from './profile.module.css';
 import NewListingModal from '@/components/ListingModal';
-
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Listing } from '@/components/Listings';
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 interface UserProfileClientProps {
     username: string;
 }
 
+interface UserInfo{
+  username: string;
+  display_name?: string;
+  profile_image?: string;
+  sales_count?: number;
+}
+
+interface Purchase {
+  id: number;
+  purchase_date: string;
+  listing: Listing;
+}
+
+const queryClient = new QueryClient();
+
+export default function RootLayout({ children}: {children: React.ReactNode}) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {children}
+      <ReactQueryDevtools initialIsOpen={false}/>
+    </QueryClientProvider>
+  )
+}
+
+const fetchUserInfo = async (username: string) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}/`);
+  return response.data;
+};
+
+const fetchUserListings = async (username: string) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/listings/?seller=${username}`);
+  return response.data;
+}
+
 export default function UserProfile({ username }: UserProfileClientProps) {
-  const [userInfo, setUserInfo] = useState<any>(null);
-  const [listings, setListings] = useState<any[]>([]);
-  const [purchases, setPurchases] = useState<any[]>([]);
-  const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('listings');
+  const queryClient = useQueryClient();
+  const{
+    data: userInfo,
+    isLoading: userLoading,
+    error: userError
+  } = useQuery({
+    queryKey: ['user', username],
+    queryFn: ()=>fetchUserInfo(username),
+    staleTime: 5*60*1000,
+  });
+
+  const {
+    data: listings = [],
+    isLoading: listingsLoading,
+    error: listingsError,
+  } = useQuery({
+    queryKey: ['listings', username],
+    queryFn: ()=>fetchUserListings(username),
+    staleTime: 2*60*1000,
+  })
+
   const [isOwner, setIsOwner] = useState(false);
+  const [purchases, setPurchases] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('listings');
   const profileImageInputRef = useRef<HTMLInputElement>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userRes, listingsRes] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}/`),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/listings/?seller=${username}`)
-        ]);
-        setUserInfo(userRes.data);
-        setListings(listingsRes.data);
-        const currentUser = localStorage.getItem('username');
-        setIsOwner(currentUser === username);
-        setPurchases([]);
-
-      } catch (err) {
-        setError('Could not load profile.');
-      }
-    };
-    fetchData();
-  }, [username]);
+  useEffect(()=> {
+    const currentUser = localStorage.getItem('username');
+    setIsOwner(currentUser=== username);
+  },[username]);
+  
+  if (userLoading || listingsLoading) {
+  return(
+    <div className={styles.skeletonWrapper}>
+      <div className={styles.skeletonCover}></div>
+      <div className={styles.skeletonProfile}>
+        <div className={styles.skeletonAvatar}></div>
+        <div className={styles.skeletonText}></div>
+        <div className={styles.skeletonTextSmall}></div>
+      </div>
+      <div className={styles.skeletonGrid}>
+        {Array.from({length:6}).map((_, i) => (
+          <div key={i} className={styles.skeletonCard}></div>
+        ))}
+      </div>
+    </div>
+  );
+ }
+ if (userError || listingsError) {
+  return <p className={styles.errorMessage}>Could not load profile data</p>;
+}
   
   const handleProfileImageClick = () => {
     if (isOwner && profileImageInputRef.current) profileImageInputRef.current.click();
@@ -55,7 +114,9 @@ export default function UserProfile({ username }: UserProfileClientProps) {
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      setUserInfo({ ...userInfo, profile_image: res.data.profile_image });
+      queryClient.setQueryData(['user', username], (oldData:any) => {
+        return {...oldData, profile_image: res.data.profile_image};
+      })
     } catch (err) {
       console.error('Upload failed:', err);
     }
@@ -85,7 +146,9 @@ export default function UserProfile({ username }: UserProfileClientProps) {
         formData,
         {headers: {'Content-Type': 'multipart/form-data'}}
       );
-      setListings([res.data, ...listings]);
+      queryClient.setQueryData(['listings', username], (oldData:Listing[] = [])=> {
+        return [res.data, ...oldData];
+      });
       setIsModalOpen(false);
 
     } catch (err) {
@@ -95,26 +158,7 @@ export default function UserProfile({ username }: UserProfileClientProps) {
 
   const closeModal = () => {
     setIsModalOpen(false);
-  };
-
-  if (error) return <p className={styles.errorMessage}>{error}</p>;
-  if (!userInfo) {
-    return(
-      <div className={styles.skeletonWrapper}>
-        <div className={styles.skeletonCover}></div>
-        <div className={styles.skeletonProfile}>
-          <div className={styles.skeletonAvatar}></div>
-          <div className={styles.skeletonText}></div>
-          <div className={styles.skeletonTextSmall}></div>
-        </div>
-        <div className={styles.skeletonGrid}>
-          {Array.from({length:6}).map((_, i) => (
-            <div key={i} className={styles.skeletonCard}></div>
-          ))}
-        </div>
-      </div>
-    )
-  };
+  };  
 
   return (
     <div className={styles.container}>
@@ -178,7 +222,7 @@ export default function UserProfile({ username }: UserProfileClientProps) {
 
               <div className={styles.listingsGrid}>
                 {listings.length > 0 ?(
-                  listings.map(item => (
+                  listings.map((item:Listing) => (
                     <div key={item.id} className={styles.listingCard}>
                       {item.image && (
                         <div className={styles.listingImageContainer}>
@@ -202,7 +246,7 @@ export default function UserProfile({ username }: UserProfileClientProps) {
               <h2 className={styles.sectionTitle}>My Purchases ({purchases.length})</h2>
               <div className={styles.purchasesGrid}>
                 {purchases.length > 0? (
-                  purchases.map(item => (
+                  purchases.map((item:Purchase) => (
                     <div key={item.id} className={styles.purchaseCard}>
                       {item.listing.image && (
                         <div className={styles.purchaseImageContainer}>

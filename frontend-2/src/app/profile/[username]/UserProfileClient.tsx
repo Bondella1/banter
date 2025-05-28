@@ -17,6 +17,7 @@ interface UserInfo{
   display_name?: string;
   profile_image?: string;
   sales_count?: number;
+  location?:string;
 }
 
 interface Purchase {
@@ -44,7 +45,7 @@ const fetchUserListings = async (username: string) => {
   return response.data;
 }
 
-export default function UserProfile({ username }: UserProfileClientProps) {
+function UserProfileContent({ username }: UserProfileClientProps) {
   const queryClient = useQueryClient();
   const{
     data: userInfo,
@@ -80,7 +81,6 @@ export default function UserProfile({ username }: UserProfileClientProps) {
   if (userLoading || listingsLoading) {
   return(
     <div className={styles.skeletonWrapper}>
-      <div className={styles.skeletonCover}></div>
       <div className={styles.skeletonProfile}>
         <div className={styles.skeletonAvatar}></div>
         <div className={styles.skeletonText}></div>
@@ -94,6 +94,7 @@ export default function UserProfile({ username }: UserProfileClientProps) {
     </div>
   );
  }
+ //error state
  if (userError || listingsError) {
   return <p className={styles.errorMessage}>Could not load profile data</p>;
 }
@@ -161,8 +162,7 @@ export default function UserProfile({ username }: UserProfileClientProps) {
   return (
     <div className={styles.container}>
       <div className={styles.profileCard}>
-        <div className={styles.coverImage} />
-        <div className={styles.profileHeader}>
+         <div className={styles.profileHeader}>
           <div className={`${styles.profileImageWrapper} ${isOwner ? styles.profileImageOwner : ''}`} onClick={handleProfileImageClick}>
             <img src={userInfo.profile_image || '/default-avatar.jpg'} alt="Profile" className={styles.profileImage} />
             {isOwner && (
@@ -274,5 +274,14 @@ export default function UserProfile({ username }: UserProfileClientProps) {
         onSubmit={handleSubmitListing}
       />
     </div>
+  );
+}
+
+export default function UserProfile({username}: UserProfileClientProps) {
+  return(
+    <QueryClientProvider client={queryClient}>
+      <UserProfileContent username={username}/>
+      <ReactQueryDevtools initialIsOpen={false}/>
+    </QueryClientProvider>
   );
 }

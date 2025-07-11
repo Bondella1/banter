@@ -6,7 +6,7 @@ from .views import (
     SetNewPasswordAPIView,
     PublicUserView, 
     VerifyEmailView,
-    ResendVerificationEmailView
+    ResendVerificationEmailView,
 )
 
 urlpatterns = [

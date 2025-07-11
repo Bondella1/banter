@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import styles from './ListingModal.module.css';
+import { resolve } from 'path';
 
 interface ListingData {
   title: string;
@@ -15,6 +16,49 @@ interface NewListingModalProps {
   onClose: () => void;
   onSubmit: (data: ListingData) => Promise<void>;
 }
+
+const validateFile = (file: File): {isValid: boolean; error?: string} => {
+  const maxSize = 10* 1024 *1024;
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+  if (file.size > maxSize) {
+    return {isValid: false, error: 'File size must be less than 10mb'};
+  }
+
+  if (!allowedTypes.includes(file.type)) {
+    return {isValid: false, error: 'only JPEG, PNG, WebP, and GIF images are allowed '};
+  }
+  return {isValid: true};
+};
+
+const compressImage = (file: File, maxWidth: number = 1200, quality: number = 0.8): Promise<File> => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = () =>{
+      const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+
+      ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        if (blob){
+          const compressedFile = new File([blob], file.name, {
+            type :file.type,
+            lastModified: Date.now(),
+          });
+          resolve(compressedFile);
+        } else {
+          resolve(file);
+        }
+      }, file.type, quality);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+};
 
 export default function NewListingModal({ 
   isOpen, 

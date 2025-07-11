@@ -2,7 +2,7 @@
 #validates incoming data when users register or update their profile
 
 from rest_framework import serializers
-from .models import CustomUser
+from .models import CustomUser, UserSettings
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
@@ -131,3 +131,4 @@ class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model=CustomUser
         fields= ['username', 'display_name', 'bio', 'profile_image']
+        

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import { MapPin, Camera} from 'lucide-react';
 import styles from './profile.module.css';
 import NewListingModal from '@/components/ListingModal';
@@ -107,12 +107,15 @@ function UserProfileContent({ username }: UserProfileClientProps) {
     if (!e.target.files?.[0]) return;
     const formData = new FormData();
     formData.append('profile_image', e.target.files[0]);
+
     try {
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}/profile-image/`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
+
+      //update cache with new image
       queryClient.setQueryData(['user', username], (oldData:any) => {
         return {...oldData, profile_image: res.data.profile_image};
       })
@@ -138,6 +141,9 @@ function UserProfileContent({ username }: UserProfileClientProps) {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('price', price);
+    formData.append('seller', username);
+
+    console.log('submittting listings:', {title, description, price, seller:username});
 
     try{
       const res = await axios.post(
@@ -145,13 +151,19 @@ function UserProfileContent({ username }: UserProfileClientProps) {
         formData,
         {headers: {'Content-Type': 'multipart/form-data'}}
       );
+      console.log('listing cretaed:', res.data);
+    
       queryClient.setQueryData(['listings', username], (oldData:Listing[] = [])=> {
         return [res.data, ...oldData];
       });
       setIsModalOpen(false);
-
     } catch (err) {
-      console.error('Upload failed:', err)
+      console.error('Upload failed:', err);
+      if (axios.isAxiosError(err)){
+        if(err.response)
+          console.error('Error response:', err.response.data);
+          console.error('Error status:', err.response.status);
+        }
     }
   };
 

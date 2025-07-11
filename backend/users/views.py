@@ -1,10 +1,12 @@
 #define the logic for what happens when someone hits an API endpoint
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator, default_token_generator
@@ -16,12 +18,13 @@ from django.utils.html import strip_tags
 from django.urls import reverse
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
-from .models import CustomUser
+from .models import CustomUser, UserSettings
 from .serializers import RegisterSerializer, UserSerializer, PasswordResetSerializer, PublicUserSerializer
 import logging
 from campushub.models import CampusHub
+ 
 
-logger=logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 User  = get_user_model()
 
 #POST /api/auth/register/
@@ -282,4 +285,32 @@ class ResendVerificationEmailView(APIView):
 
         except CustomUser.DoesNotExist:
             return Response({'error': 'No user found with that email'}, status=404)
+ 
+ 
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_settings_api(request, username):
+    try:
+        user = get_object_or_404(CustomUser, username=username)
+        settings, created = UserSettings.objects.get_or_create(user=user)
     
+        if request.method == 'GET':
+            return Response({
+                'theme': settings.theme,
+                'email_notifications': settings.email_notifications,
+                'display_name': settings.display_name,
+            })
+        
+        elif request.method == 'PUT':
+            if 'theme' in request.data:
+                settings.theme  = request.data['theme']
+            if 'email_notifications' in request.data:
+                settings.email_notifications = request.data['email_notifications']
+            if 'display_name' in request.dayta:
+                settings.display_name = request.data['display_name']
+            
+            settings.save()
+            return Response({'message': 'Settings updated successfully'})
+    
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

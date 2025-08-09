@@ -1,0 +1,88 @@
+/* Page layout */
+.page {
+  @apply mx-auto max-w-3xl px-4 py-8;
+}
+.pageTitle {
+  @apply text-2xl font-bold text-gray-100;
+}
+.pageSubtitle {
+  @apply text-sm text-gray-400 mt-1;
+}
+
+/* Grouped rows (save bar, banners, etc.) */
+.saveRow {
+  @apply mt-6 flex items-center justify-between gap-3 flex-wrap;
+}
+.saveLeft {
+  @apply flex items-center gap-3;
+}
+.savedAt {
+  @apply text-xs text-gray-400;
+}
+
+/* Sections */
+.sectionGrid {
+  @apply mt-6 grid grid-cols-1 gap-6;
+}
+.section {
+  @apply rounded-2xl border border-gray-800 bg-gray-950/40 p-5;
+}
+.sectionTitle {
+  @apply text-lg font-semibold text-gray-100;
+}
+.sectionContent {
+  @apply mt-4 grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+.fullWidth {
+  @apply md:col-span-2;
+}
+
+/* Form primitives */
+.label {
+  @apply text-sm font-medium text-gray-200 mb-1 block;
+}
+.input {
+  @apply w-full rounded-xl bg-gray-900/40 border border-gray-700 px-3 py-2 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500;
+}
+.select {
+  @apply w-full rounded-xl bg-gray-900/40 border border-gray-700 px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500;
+}
+.select option:disabled {
+  @apply text-gray-500;
+}
+.error {
+  @apply mt-1 text-xs text-red-400;
+}
+
+/* Buttons */
+.button {
+  @apply inline-flex items-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:cursor-not-allowed px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all;
+}
+.icon {
+  @apply h-4 w-4;
+}
+.spinner {
+  @apply h-4 w-4 animate-spin;
+}
+
+/* Banners */
+.banner {
+  @apply flex items-center gap-2 border rounded-xl px-3 py-2;
+}
+.bannerIcon {
+  @apply h-4 w-4;
+}
+.bannerSuccess {
+  @apply bg-emerald-900/30 text-emerald-200 border-emerald-700;
+}
+.bannerError {
+  @apply bg-red-900/30 text-red-200 border-red-700;
+}
+.bannerInfo {
+  @apply bg-indigo-900/30 text-indigo-200 border-indigo-700;
+}
+
+/* Notes */
+.note {
+  @apply mt-1 text-xs text-gray-500;
+}

@@ -8,6 +8,7 @@ import NewListingModal from '@/components/ListingModal';
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/components/Listings';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
+import ListingCard from '@/components/listingCard';
 interface UserProfileClientProps {
     username: string;
 }

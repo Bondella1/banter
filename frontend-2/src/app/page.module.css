@@ -19,105 +19,53 @@
 
 /* ===== Container ===== */
 .container {
-  height: 100vh;
-  width: 100vw;
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  text-align: center;
-  position: relative;
-  overflow-x: hidden;
-  box-sizing: border-box;
+  @apply h-screen w-screen bg-white flex flex-col justify-center items-center p-8 text-center relative overflow-x-hidden box-border;
 }
 
-/* Add subtle decorative elements */
 .container::before {
   content: "";
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  background: #ffffff;
-  top: -50px;
-  right: -50px;
-  z-index: 0;
+  @apply absolute w-[300px] h-[300px] bg-white -top-[50px] -right-[50px] z-0;
 }
 
 /* ===== Typography ===== */
 .title {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(2.5rem, 5vw, 3.5rem); /* Responsive font size */
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.25rem;
+  @apply text-transparent bg-clip-text font-extrabold mb-2 relative z-[1] tracking-[0.25rem];
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   background: var(--gradient);
-  background-clip: text;
-  color: transparent;
 }
 
 .subtitle {
+  @apply text-[#e53935] mb-8 max-w-[600px] leading-[1.5] relative z-[1] font-semibold;
   font-size: clamp(1rem, 2vw, 1.25rem);
-  color: #e53935;
-  margin-bottom: 2rem;
-  max-width: 600px;
-  line-height: 1.5;
-  position: relative;
-  z-index: 1;
-  font-weight: 600;
 }
 
 /* ===== Buttons ===== */
 .buttonGroup {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
+  @apply flex gap-4 flex-wrap justify-center relative z-[1];
 }
 
 .button {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  @apply px-8 py-3 text-base font-semibold border-0 rounded-lg cursor-pointer transition-all duration-200 ease-linear inline-flex items-center justify-center gap-2;
 }
 
 .button.primary {
-  background-color: var(--white);
-  color: #e53935;
-  box-shadow: var(--shadow-md);
-  border: 2px solid #9f9c9c;
+  @apply bg-white text-[#e53935] shadow-md border-[2px] border-[#9f9c9c];
 }
 
 .button.primary:hover {
-  transform: translateY(-1px);
-  border-color: #9f9c9c;
+  @apply -translate-y-px border-[#9f9c9c];
 }
 
 .button.secondary {
-  background-color: var(--white);
-  color: #e53935;
-  border: 2px solid #9f9c9c;
+  @apply bg-white text-[#e53935] border-[2px] border-[#9f9c9c];
   background-clip: padding-box, border-box;
   background-origin: padding-box, border-box;
   background-image: linear-gradient(var(--white), var(--white)), var(--gradient);
 }
 
 .button.secondary:hover {
-  border-color: #9f9c9c;
-  transform: translateY(-1px);
+  @apply border-[#9f9c9c] -translate-y-px;
 }
 
 /* ===== Animation ===== */
@@ -130,27 +78,22 @@
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Delay animations for child elements */
 .subtitle { animation-delay: 0.2s; }
 .buttonGroup { animation-delay: 0.4s; }
 
 /* ===== Mobile Optimization ===== */
 @media (max-width: 640px) {
   .buttonGroup {
-    flex-direction: column;
-    width: 100%;
+    @apply flex-col w-full;
   }
-  
   .button {
-    width: 100%;
+    @apply w-full;
   }
-  
   .container::before {
-    width: 200px;
-    height: 200px;
+    @apply w-[200px] h-[200px];
   }
 }
 
 .logoDigit {
-  font-size: 0.8em;
+  @apply text-[0.8em];
 }

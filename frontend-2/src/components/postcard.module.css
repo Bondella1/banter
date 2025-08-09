@@ -1,27 +1,15 @@
 .card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-  
-  .image {
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    margin-bottom: 0.5rem;
-  }
-  
-  .caption {
-    font-size: 0.95rem;
-    color: #333;
-  }
-  
+  @apply bg-white rounded-[8px] p-4 mb-6 [box-shadow:0_2px_8px_rgba(0,_0,_0,_0.05)];
+}
+
+.header {
+  @apply flex justify-between mb-2 font-medium;
+}
+
+.image {
+  @apply w-full h-auto rounded-[6px] mb-2;
+}
+
+.caption {
+  @apply text-[0.95rem] text-[#333];
+}

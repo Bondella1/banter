@@ -22,7 +22,7 @@ export default async function ListingsPage() {
   return (
     <main className={styles.container}>
       <h1 className={styles.heading}>Browse Listings</h1>
-      <div className={styles.grid}>
+      <div className={styles.cardsGrid}>
         {listings.map(listing => (
           <ListingCard key={listing.id} listing={listing} />
         ))}

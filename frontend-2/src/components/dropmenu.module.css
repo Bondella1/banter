@@ -1,39 +1,20 @@
 .dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropbtn {
-    background-color: #444;
-    color: white;
-    padding: 10px 14px;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.menu{
-    position: absolute;
-    background-color: white;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.item {
-    display: block;
-    padding: 10px 14px;
-    width: 100%;
-    text-align: left;
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 14px;
-    background-color: #444;
-}
-
-.item:hover {
-    background-color: black;
-}
+    @apply relative inline-block;
+  }
+  
+  .dropbtn {
+    @apply bg-[#444] text-white px-[14px] py-[10px] border-0 cursor-pointer rounded;
+  }
+  
+  .menu {
+    @apply absolute bg-white min-w-[160px] [box-shadow:0px_8px_16px_rgba(0,_0,_0,_0.2)] z-[1] rounded overflow-hidden;
+  }
+  
+  .item {
+    @apply block px-[14px] py-[10px] w-full text-left border-0 bg-transparent cursor-pointer text-[14px] bg-[#444];
+  }
+  
+  .item:hover {
+    @apply bg-black;
+  }
+  

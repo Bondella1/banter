@@ -1,117 +1,61 @@
 .container {
-  min-height: 100vh;
-  width: 100vw;
-  background-color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 100px 1rem 2rem;
+  @apply min-h-screen w-screen bg-white flex items-center justify-center overflow-y-auto box-border pt-[100px] px-4 pb-8;
 }
 
 .card {
-  background: #ffffff;
-  padding: 2rem;
-  border-radius: 1rem;
-  width: 100%;
-  max-width: 420px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 2rem auto;
+  @apply bg-white p-8 rounded-2xl w-full max-w-[420px] border border-[#e5e7eb]
+         [box-shadow:0_4px_12px_rgba(0,_0,_0,_0.1)] my-8 mx-auto;
 }
 
 .input {
-  width: 100%;
-  padding: 0.75rem;
-  padding-right: 2.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  background-color: #ffffff;
-  color: #111827;
+  @apply w-full p-3 pr-10 border border-[#ccc] rounded-lg mb-4 text-base bg-white text-[#111827];
 }
 
 .button {
-  background: #e53935;
-  color: white;
-  padding: 0.75rem;
-  width: 100%;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  @apply bg-[#e53935] text-white p-3 w-full border-0 rounded-lg font-semibold text-base cursor-pointer transition-colors duration-200;
 }
 
-
 .title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 1.5rem;
-  text-align: center;
+  @apply text-[1.75rem] font-bold text-[#1f2937] mb-6 text-center;
 }
 
 .eduNote {
-  font-size: 0.875rem;
-  color: #555;
-  margin-top: -0.5rem;
-  margin-bottom: 1rem;
+  @apply text-sm text-[#555] -mt-2 mb-4;
 }
 
 .emailContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
+  @apply relative flex items-center;
 }
 
 .checkmark {
-  position: absolute;
-  right: 0.75rem;
-  color: #10b981;
-  font-weight: bold;
-  font-size: 1rem;
+  @apply absolute right-3 text-[#10b981] font-bold text-base;
   transform: translateY(-50%);
   top: 35%;
 }
 
 .error {
-  color: #ef4444;
-  background-color: #fee2e2;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 0.875rem;
+  @apply text-[#ef4444] bg-[#fee2e2] p-3 rounded-lg mb-4 text-sm;
 }
+
 .eyeIcon {
-  position: absolute;
-  right:1rem;
-  cursor:pointer;
+  @apply absolute cursor-pointer text-[#555] text-[1.2rem];
   transform: translateY(-50%);
   top: 40%;
   right: 0.75rem;
-  color: #555;
-  font-size: 1.2rem;
 }
 
 .passwordwrap {
-  position: relative;
-  margin-bottom: 0.1rem;
+  @apply relative mb-[0.1rem];
 }
 
 .passwordChecklist {
-  font-size: 0.85rem;
-  color: #555;
-  margin-bottom: 0.5rem
+  @apply text-[0.85rem] text-[#555] mb-2;
 }
 
 .rulepass {
-  color: green;
+  @apply text-green-600;
 }
 
 .rulefail {
-  color: red;
+  @apply text-red-600;
 }

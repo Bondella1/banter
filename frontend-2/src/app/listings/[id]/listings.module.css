@@ -1,50 +1,33 @@
 /* app/listings/[id]/page.module.css */
 
 .container {
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
+  @apply p-6 max-w-[800px] mx-auto;
 }
 
 .title {
-  margin-bottom: 8px;
-  font-size: 2rem;
-  font-weight: 600;
+  @apply mb-2 text-[2rem] font-semibold;
 }
 
 .image {
-  width: 100%;
-  max-height: 500px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  @apply w-full max-h-[500px] object-cover rounded-[8px] mb-4;
 }
 
 .price {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 16px;
+  @apply text-[1.25rem] font-semibold mb-4;
 }
 
 .section {
-  margin-bottom: 24px;
+  @apply mb-6;
 }
 
 .sellerLink {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-  color: inherit;
+  @apply flex items-center gap-3 no-underline [color:inherit];
 }
 
 .sellerAvatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  @apply w-10 h-10 rounded-full;
 }
 
 .postedOn {
-  color: #666;
-  font-size: 0.875rem;
+  @apply text-[#666] text-sm;
 }

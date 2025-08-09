@@ -1,56 +1,22 @@
 /* login.module.css */
+
 .container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100%;
-    background-color:#ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .card {
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 1rem;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid #e5e7eb;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    background-color: #ffffff;
-    color: #111827;
-  }
-  
-  .button {
-    background-color: #e53935;
-    color: white;
-    padding: 0.75rem;
-    width: 100%;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: "Montserrat", sans-serif;
-    cursor: pointer;
-  }
-  
-  
-  
-  .title {
-    font-size: 1.75rem;
-    font-weight: bold;
-    color: #1f2937; /* Dark gray text */
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
+  @apply absolute top-0 left-0 h-screen w-full bg-white flex items-center justify-center m-0 p-0;
+}
+
+.card {
+  @apply bg-white p-8 rounded-2xl w-full max-w-[400px] border border-[#e5e7eb];
+}
+
+.input {
+  @apply w-full p-3 border border-[#ccc] rounded-lg mb-4 text-base bg-white text-[#111827];
+}
+
+.button {
+  font-family: "Montserrat", sans-serif;
+  @apply bg-[#e53935] text-white p-3 w-full border-0 rounded-lg font-semibold cursor-pointer;
+}
+
+.title {
+  @apply text-[1.75rem] font-bold text-[#1f2937] mb-6 text-center;
+}

@@ -1,94 +1,43 @@
 .header {
-  width: 100%;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  z-index: 1000;
-  }
-  
+  @apply w-full bg-white border-b border-b-[#e5e7eb] px-8 py-4
+         flex justify-between items-center fixed top-0 z-[1000];
+}
+
 .logo {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: linear-gradient(to top,#d32f2f 0% ,#e53935 15%,#f4511e 35%, #ff8c00 55% ,#ffb300 75%, #beac07 100%);
-  color: transparent;
-  background-clip: text;
-  transition: opacity 0.2s;
-  letter-spacing: 0.25rem;
+  @apply text-[1.5rem] font-bold cursor-pointer
+         bg-[linear-gradient(to_top,_#d32f2f_0%,_#e53935_15%,_#f4511e_35%,_#ff8c00_55%,_#ffb300_75%,_#beac07_100%)]
+         text-transparent bg-clip-text
+         transition-opacity duration-200 tracking-[0.25rem];
 }
 
-.logoDigit {
-  font-size: 0.9em;
-}
-  
+.logoDigit { @apply text-[0.9em]; }
+
 .link {
-  margin-left: 1rem;
-  background: none;
-  border: none;
-  color: #e53935;
-  font-weight: 500;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
-  font-weight: 600;
+  @apply ml-4 bg-transparent border-0 text-[#e53935] font-semibold text-base
+         cursor-pointer transition-colors duration-200 ease-linear;
 }
+.link:hover { @apply text-[#ba6f95]; }
 
-.link:hover {
-  color: #ba6f95;
-}
-  
-.username {
-  color: #894668;
-}
+.username { @apply text-[#894668]; }
 
 .searchbar {
-  display: flex;
-  flex: 1;
-  max-width: 600px;
-  margin: 0 24px;
-  color: white;
+  @apply flex flex-1 max-w-[600px] my-0 mx-6 text-white;
 }
 
 .searchInput {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ccc ;
-  border-radius: 4px 0 0 4px;
-  font-size: 14px;
-  background-color: white;
+  @apply flex-1 py-2 px-3 border border-[#ccc] rounded-l text-[14px] bg-white;
 }
 
 .searchbutton {
-  padding: 8px 16px;
-  background-color: white;
-  color: #555;
-  border:none ;
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  border: 1px solid #ccc ;
-
+  @apply py-2 px-4 bg-white text-[#555] rounded-r cursor-pointer font-medium
+         transition-colors duration-200 border border-[#ccc];
 }
 
 .searchForm {
-  display: flex;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+  @apply flex w-full max-w-[600px] my-0 mx-auto;
 }
 
 .iconButton {
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: inline-block;
-  align-items: normal;
-  justify-content: center;
+  @apply border-0 cursor-pointer p-2 inline-block;
 }

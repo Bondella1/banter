@@ -1,25 +1,18 @@
 .wrapper {
-    margin-top: 1rem;
-  }
+  @apply mt-4;
+}
 
 .grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  
+  display: grid; /* avoid @apply grid to prevent circular dependency */
+  @apply gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
 /* Listings.module.css */
 .addButton {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-  
+  @apply bg-[#4CAF50] text-white px-5 py-[10px] border-0 rounded cursor-pointer text-[16px] mb-5;
+}
+
 .addButton:hover {
-    background-color: #45a049;
-  }
+  @apply bg-[#45a049];
+}

@@ -1,0 +1,32 @@
+.container {
+    @apply max-w-2xl mx-auto p-6;
+  }
+  
+  .title {
+    @apply text-2xl font-bold mb-4;
+  }
+  
+  .empty {
+    @apply text-gray-500 text-center;
+  }
+  
+  .list {
+    @apply space-y-4;
+  }
+  
+  .item {
+    @apply flex justify-between items-center bg-white shadow p-4 rounded-lg;
+  }
+  
+  .qty {
+    @apply w-16 border rounded text-center;
+  }
+  
+  .remove {
+    @apply text-red-500 hover:underline;
+  }
+  
+  .total {
+    @apply flex justify-between mt-6 text-xl font-semibold;
+  }
+  

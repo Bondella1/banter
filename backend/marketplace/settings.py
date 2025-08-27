@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'campushub',
     'rest_framework_simplejwt.token_blacklist',
+    'cart',
 ]
 
 MIDDLEWARE = [

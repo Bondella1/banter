@@ -8,7 +8,7 @@ import NewListingModal from '@/components/ListingModal';
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Listing } from '@/components/Listings';
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
-import ListingCard from '@/components/listingCard';
+import Link from 'next/link';
 interface UserProfileClientProps {
     username: string;
 }
@@ -19,6 +19,7 @@ interface UserInfo{
   profile_image?: string;
   sales_count?: number;
   location?:string;
+  bio?: string;
 }
 
 interface Purchase {
@@ -56,6 +57,7 @@ function UserProfileContent({ username }: UserProfileClientProps) {
     queryKey: ['user', username],
     queryFn: ()=>fetchUserInfo(username),
     staleTime: 5*60*1000,
+    refetchOnWindowFocus: true,
   });
 
   const {
@@ -190,6 +192,13 @@ function UserProfileContent({ username }: UserProfileClientProps) {
             <div className={styles.profileMeta}>
               <div>
                 <h1 className={styles.profileName}>{userInfo.display_name || userInfo.username}</h1>
+                {userInfo.bio && (<p className={styles.profileBio}>{userInfo.bio}</p>)}
+                {isOwner && (
+                  <div className={styles.actionsRow}>
+                    <Link href="/settings" className={styles.editButton}>Edit Profile</Link>
+                  </div>
+                )}
+
                 {userInfo.location && (
                   <div className={styles.location}>
                     <MapPin size={16} className={styles.icon} />

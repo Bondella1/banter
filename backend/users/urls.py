@@ -7,6 +7,9 @@ from .views import (
     PublicUserView, 
     VerifyEmailView,
     ResendVerificationEmailView,
+    me,
+    CompleteOnboardingView,
+    UserSettingsView,
 )
 
 urlpatterns = [
@@ -16,7 +19,10 @@ urlpatterns = [
     path('request-reset-email/', RequestPasswordResetEmail.as_view(), name='request-reset-email'),
     path('password-reset/<uidb64>/<token>/', PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
     path('password-reset-complete/', SetNewPasswordAPIView.as_view(), name='password-reset-complete'),
-    path('<str:username>/', PublicUserView.as_view(), name='public-user'),
-    path('verify-email/<uidb64>/<token>', VerifyEmailView.as_view(), name='verify-email'),
+    path('verify-email/<uidb64>/<token>/', VerifyEmailView.as_view(), name='verify-email'),
     path('resend-verification/', ResendVerificationEmailView.as_view(), name='resend-verification'),
+    path('me/', me, name='me'),
+    path('onboarding/complete/', CompleteOnboardingView.as_view(), name='onboarding-complete'),
+    path('settings/', UserSettingsView.as_view(), name='settings'),
+    path('users/settings/', UserSettingsView.as_view(), name='user-settings'),
 ]

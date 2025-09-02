@@ -218,3 +218,14 @@ html, body { @apply h-full m-0 p-0; }
 
   .purchasesGrid { @apply grid-cols-1; }
 }
+
+.actionsRow { @apply mt-2; }
+.editButton {
+  @apply inline-block rounded-xl px-3 py-1 text-sm font-medium
+         bg-indigo-600 text-white hover:bg-indigo-500 transition;
+}
+
+.profileBio {
+  @apply mt-1 text-sm text-gray-400;
+}
+

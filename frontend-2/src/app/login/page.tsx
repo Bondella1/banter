@@ -23,7 +23,6 @@ export default function LoginPage() {
 
     try {
       console.log("Login attempt with username:", formData.username);
-
       // 1) Call the JWT obtain endpoint (no "auth" prefix, no trailing slash)
       const { data } = await axios.post(
         `${API}/api/token`,
@@ -42,8 +41,19 @@ export default function LoginPage() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
       window.dispatchEvent(new Event('auth-change'));
 
+      const meRes = await axios.get(`${API}/api/auth/me/`); // use your existing "me" or Profile endpoint
+      const me = meRes.data;
+      console.log('ME payload →', me);
+      localStorage.removeItem('needsSetup');
+
+      if (me?.has_onboarded === false) {
+        router.replace('/setup-profile');
+      } else if (me?.campus?.tab) {
+        router.replace(`/hub/${me.campus.tab}`);
+      } else {
+        router.replace('/dashboard'); // or your default home
+      }
       // 4) Redirect the user (for example, to their profile setup)
-      router.push('/setup-profile');
     } catch (err: any) {
       console.error('Login error:', err);
       setError('Invalid credentials. Please try again.');

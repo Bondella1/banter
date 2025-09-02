@@ -3,9 +3,11 @@ from .models import Listings
 from django.contrib.auth.models import User
 
 class SellerSerializer(serializers.ModelSerializer):
+    seller = serializers.PrimaryKeyRelatedField(read_only=True)
+    seller_username = serializers.CharField(source='seller.username', read_only=True)
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'profile_image']
+        fields = ['id','title','description','price','image','is_active','created_at','updated_at','seller','seller_username']
 
 class ListingSerializer(serializers.ModelSerializer):
     seller = serializers.StringRelatedField()

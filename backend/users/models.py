@@ -5,10 +5,10 @@ from django.conf import settings
 
 
 class CustomUser(AbstractUser):
-    is_seller = models.BooleanField(default=False)
     profile_image = models.ImageField(upload_to='profile_image/', blank=True, null=True)#has been implemented yet
     display_name = models.CharField(max_length=150, blank=True, null=True)
     bio = models.TextField(blank=True)
+    has_onboarded = models.BooleanField(default=False)
 
     campus = models.ForeignKey(
         CampusHub,

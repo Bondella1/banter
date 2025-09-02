@@ -21,8 +21,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'campus_tag','is_seller', 'profile_image', 'display_name', 'bio', 'profileCompleted']
-        read_only_fields = ['id', 'date_joined']
+        fields = ['id', 'username', 'email', 'campus_tag', 'profile_image', 'display_name', 'bio', 'profileCompleted', 'has_onboarded']
+        read_only_fields = ['id', 'has_onboarded']
         extra_kwargs = {
             'profile_image':{'required':False},
             'bio': {'required': False, 'allow_blank':True }
@@ -30,7 +30,11 @@ class UserSerializer(serializers.ModelSerializer):
         
     def get_profileCompleted(self, obj):
         required_fields = ['username', 'email', 'campus', 'profileCompleted']
-        return all(getattr(obj, field, None) for field in required_fields)
+        return all([
+            bool(obj.username),
+            bool(obj.email),
+            bool(getattr(obj, 'campus', None)),
+        ])
     
     def validate_email(self,value):
         try:
@@ -42,6 +46,10 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid email format")
 
 class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=CustomUser.objects.all(), message="Email already in use")]
+    )
     #for registering a new user
     password = serializers.CharField(
         write_only=True,
@@ -91,8 +99,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     def validate_email(self, value):
         value = value.lower()
-        if CustomUser.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already in use")
         if not value.endswith('.edu'):
             raise serializers.ValidationError("Only .edu emails allowed")
         return value
@@ -105,8 +111,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             **validated_data,
             password=password,
             is_active=False
-            #is_seller=validated_data.get('is_seller', False)
-            #removed checkbox from registration by commenting out is_seller
         )
         return user
     
@@ -131,4 +135,22 @@ class PublicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model=CustomUser
         fields= ['username', 'display_name', 'bio', 'profile_image']
+        
+
+class UserSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSettings
+        fields = [
+            "display_name", "bio", "theme"
+        ]
+        extra_kwargs = {
+            "display_name": {"required": False, "allow_blank": True},
+            "bio": {"required": False, "allow_blank": True},
+            "theme": {"required": False},
+        }
+    
+    def validate_theme(self, v):
+        if v not in ("light", "dark"):
+            raise serializers.ValidationError("theme must be 'light' or 'dark'")
+        return v
         

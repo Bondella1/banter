@@ -1,14 +1,15 @@
 #define the logic for what happens when someone hits an API endpoint
 from django.shortcuts import render, get_object_or_404
 from rest_framework import generics, permissions, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate, get_user_model
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator, default_token_generator
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -19,18 +20,79 @@ from django.urls import reverse
 from django.core.mail import EmailMessage, send_mail
 from django.conf import settings
 from .models import CustomUser, UserSettings
-from .serializers import RegisterSerializer, UserSerializer, PasswordResetSerializer, PublicUserSerializer
+from .serializers import RegisterSerializer, UserSerializer, PasswordResetSerializer, PublicUserSerializer, UserSettingsSerializer
 import logging
 from campushub.models import CampusHub
+from cart.models import Cart
  
 
 logger = logging.getLogger(__name__)
 User  = get_user_model()
 
+def _build_verify_url(user):
+    base = getattr(settings, "FRONTEND_VERIFY_URL_BASE", "http://localhost:3000/verify-email")
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = default_token_generator.make_token(user)
+    return f"{base}/{uid}/{token}/", uid, token
+
+def _send_verification_email(user):
+    verify_url, uid, token = _build_verify_url(user)
+    subject = "Verify your email address"
+    message = f"Click to verify your account: {verify_url}"
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+    return verify_url  
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def user_settings_api(request, username):
+    user = get_object_or_404(CustomUser, username=username)
+    if request.user != user:
+        return Response({'error':'Forbidden'}, status=status.HTTP_403_FORBIDDEN)
+    
+    settings, _ = UserSettings.objects.get_or_create(user=user)
+    
+    if request.method == 'GET':
+        return Response({
+            'theme': settings.theme,
+            'email_notifications': settings.email_notifications,
+            'display_name': settings.display_name,
+        })
+    
+    data = request.data
+    if 'theme' in data:
+        settings.theme  = data['theme']
+    if 'email_notifications' in data:
+        settings.email_notifications = data['email_notifications']
+    if 'display_name' in data:
+        settings.display_name = data['display_name']
+            
+    settings.save()
+    return Response({'message': 'Settings updated successfully'})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def me(request):
+    u = request.user
+    campus = getattr(u, "campus", None)
+    return Response({
+        "id": u.id,
+        "username": u.username,
+        "email": u.email,
+        "has_onboarded": bool(getattr(u, "has_onboarded", False)),
+        "campus": {
+            "id": campus.id,
+            "name": campus.name,
+            "domain": campus.domain,
+            "tab": getattr(campus, "campus_tag", None),
+        } if campus else None,
+    })
+
 #POST /api/auth/register/
 class RegisterView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = []
 
     def create(self, request, *args, **kwargs):
         email = request.data.get('email', '').lower()
@@ -57,77 +119,79 @@ class RegisterView(generics.CreateAPIView):
         
         try:
             user = serializer.save(is_active=False, campus=campus)
-            self._sendverificationemail(user, request)
+            if getattr(user, "campus_id", None) != getattr(campus, "id", None):
+                user.campus = campus
+                user.save(update_fields=["campus"])
+            #create cart at reg
+            Cart.objects.get_or_create(user=user)
+            #send verfifcation
+            verify_url = _send_verification_email(user)
             return Response({
                 'message': 'Verification email sent - check your inbox',
-                'campus': campus.name if campus else None
+                'campus': {
+                    "id":campus.id,
+                    "name": campus.name,
+                    "domain": campus.domain,
+                    "tab": campus.campus_tag, #for routing
+                },
             },status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 #POST login
-#class LoginView(APIView):
-#    def post(self, request):
-#        username = request.data.get("username")
-#        password = request.data.get("password")
-
-#        if not username or not password:
-#            return Response(
-#               {"error": "Both username and password are required"},
-#              status=status.HTTP_400_BAD_REQUEST
-#            )
-
-#        user = authenticate(username=username, password=password)
-#        if not user:
-#            return Response(
-#                {"error": "Invalid credentials"},
-#                status=status.HTTP_401_UNAUTHORIZED
-#            )
-        #check for a deactivated account
-#        if not user.is_active:
-#            return Response(
-#                {"error": "Account is inactive"},
-#                status=status.HTTP_403_FORBIDDEN
-#            )
-        
-#        token, _=Token.objects.get_or_create(user=user)
-#        return Response({
-#            "token": token.key,
-#            "user": UserSerializer(user).data
-#        })
-
 class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
     def post(self, request):
-        # For development purposes, just use the first user in the database
-        # You could replace this with any logic to pick a test user
-        user = CustomUser.objects.first()  # Or use CustomUser.objects.get(username='testuser') for a specific user
-        
+        identifier = (request.data.get("username") or request.data.get("email") or "").strip()
+        password = request.data.get("password")
+
+        if not identifier or not password:
+            return Response(
+               {"error": "Both username and password are required"},
+              status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        lookup = {"email__iexact": identifier} if "@" in identifier else {"username__iexact": identifier}
+        try:
+            u = User.objects.get(**lookup)
+            username = u.get_username()
+        except User.DoesNotExist:
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = authenticate(request, username=username, password=password)
         if not user:
             return Response(
-                {"error": "No user found in the database"},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Invalid credentials"},
+                status=status.HTTP_401_UNAUTHORIZED
             )
-
-        # If you need to skip account activation check, set is_active=True manually
+        #check for a deactivated account
         if not user.is_active:
-            user.is_active = True
-            user.save()
-
-        # Generate or retrieve the token for the user
-        token, _ = Token.objects.get_or_create(user=user)
-
-        # Return the token and user data (you can use a serializer to return user details)
+            return Response(
+                {"error": "Please verify your email"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        Cart.objects.get_or_create(user=user)
+        refresh = RefreshToken.for_user(user)
+        
+        campus = getattr(user, "campus", None)
+        campus_payload = {
+            "id": campus.id,
+            "name": campus.name,
+            "domain": campus.domain,
+            "tab": getattr(campus, "campus_tag", None)  # for routing
+        } if campus else None
         return Response({
-            "token": token.key,
-            "user": {
-                "username": user.username,
-                "email": user.email,
-                # Add any other user fields you need here
-            }
-        })
- #GET or PUT    
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "user": UserSerializer(user).data,
+            "has_onboarded": bool(getattr(user, "has_onboarded", False)),
+            "campus": campus_payload,
+        }, status=200)
+
+   
 class ProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_object(self):
@@ -179,6 +243,8 @@ class PasswordTokenCheckAPI(APIView):
             return Response({'message': 'Token is invalid or expired'}, status=status.HTTP_400_BAD_REQUEST)
 
 class SetNewPasswordAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    
     def patch(self, request):
         serializer = PasswordResetSerializer(data=request.data)  # Create a serializer
         serializer.is_valid(raise_exception=True)
@@ -226,10 +292,10 @@ class PublicUserView(RetrieveAPIView):
         context['is_public'] = not self.request.user.is_authenticated
         return context
     
-    def get_object(self):
-        username = self.kwargs.get("username")
-        print(f"Looking up user: {username}")
-        return super().get_object()
+    # def get_object(self):
+    #     username = self.kwargs.get("username")
+    #     print(f"Looking up user: {username}")
+    #     return super().get_object()
 
     
 class VerifyEmailView(APIView):
@@ -243,18 +309,30 @@ class VerifyEmailView(APIView):
             if not default_token_generator.check_token(user,token):
                 return Response({'error': 'Invalid or expired token'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            if user.is_active:
-                return Response({'message': 'Account already activated'},
-                                status=status.HTTP_200_OK)
-            user.is_active=True
-            user.save()
-            token, _= Token.objects.get_or_create(user=user)
+
+            Cart.objects.get_or_create(user=user)
+            
+            if not user.is_active:
+                user.is_active = True
+                user.save(update_fields=["is_active"])
+                
+            refresh = RefreshToken.for_user(user)
+            
+            campus = getattr(user, "campus", None)
+            campus_payload = {
+                "id": campus.id,
+                "name": campus.name,
+                "domain": campus.domain,
+                "tab": getattr(campus, "campus_tag", None)  # for routing
+            } if campus else None
             return Response({'message':'Email successfully verified',
-                             'token': token.key},
-                            status=status.HTTP_200_OK)
+                             'access': str(refresh.access_token),
+                             'refresh': str(refresh),
+                             'has_onboarded': bool(getattr(user, "has_onboarded", False)),
+                             'campus': campus_payload,},
+                            status=200)
         except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-            return Response({'error':'InvaliD verification link'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error':'InvaliD verification link'}, status=400)
         
 class ResendVerificationEmailView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -268,49 +346,38 @@ class ResendVerificationEmailView(APIView):
             user = CustomUser.objects.get(email=email)
             if user.is_active:
                 return Response({'message': 'Account already verified'}, status=200)
-
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            verification_url = f"http://localhost:3000/verify-email/{uid}/{token}/"
-
-            send_mail(
-                subject='Verify your email address (Resent)',
-                message=f"Click to verify: {verification_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False
-            )
-
+            _send_verification_email(user)
             return Response({'message': 'Verification email resent'}, status=200)
-
         except CustomUser.DoesNotExist:
             return Response({'error': 'No user found with that email'}, status=404)
- 
- 
-@api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
-def user_settings_api(request, username):
-    try:
-        user = get_object_or_404(CustomUser, username=username)
-        settings, created = UserSettings.objects.get_or_create(user=user)
-    
-        if request.method == 'GET':
-            return Response({
-                'theme': settings.theme,
-                'email_notifications': settings.email_notifications,
-                'display_name': settings.display_name,
-            })
-        
-        elif request.method == 'PUT':
-            if 'theme' in request.data:
-                settings.theme  = request.data['theme']
-            if 'email_notifications' in request.data:
-                settings.email_notifications = request.data['email_notifications']
-            if 'display_name' in request.dayta:
-                settings.display_name = request.data['display_name']
             
-            settings.save()
-            return Response({'message': 'Settings updated successfully'})
+class CompleteOnboardingView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if not user.has_onboarded:
+            user.has_onboarded = True
+            user.save(update_fields=['has_onboarded'])
+        return Response({'message': 'Onboarding completed successfully'}, status=200)
+
+class UserSettingsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, request):
+        # ensure OneToOne exists
+        settings, _ = UserSettings.objects.get_or_create(user=request.user)
+        return settings
+
+    def get(self, request):
+        obj = self.get_object(request)
+        return Response(UserSettingsSerializer(obj).data)
+
+    def patch(self, request):
+        obj = self.get_object(request)
+        ser = UserSettingsSerializer(obj, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return Response(ser.data, status=status.HTTP_200_OK)
+
     
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

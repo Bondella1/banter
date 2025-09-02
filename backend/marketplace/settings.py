@@ -150,6 +150,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PERMISSION_CLASSES':[
+        "rest_framework.permissions.AllowAny",
+    ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '5/hour',
         'auth': '20/minute'
@@ -181,10 +184,19 @@ SIMPLE_JWT ={
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@banter.local'
 
-DEFAULT_FROM_EMAIL = 'noreply@example.com'
+FEATURE_ENFORCE_EDU = False
+FEATURE_ENFORCE_CAMPUSHUB = False
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
+CORS_ALLOW_CREDENTIALS= True
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+FRONTEND_VERIFY_URL_BASE = "http://localhost:3000/verify-email"

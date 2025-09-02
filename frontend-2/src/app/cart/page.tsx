@@ -12,8 +12,6 @@ interface CartItem {
 
 export default function CartPage() {
   const [cart, setCart] = useState<CartItem[]>([
-    { id: 1, name: "Product A", price: 20, quantity: 1 },
-    { id: 2, name: "Product B", price: 35, quantity: 2 },
   ]);
 
   const updateQuantity = (id: number, qty: number) => {

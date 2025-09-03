@@ -6,6 +6,7 @@ from .serializers import ListingSerializer
 from .permisions import IsOwnerOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 
 class ListingListView(generics.ListAPIView):
@@ -14,6 +15,7 @@ class ListingListView(generics.ListAPIView):
     serializer_class = ListingSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticatedOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
         qs = Listings.objects.filter(is_active=True).select_related('seller').order_by('-created_at')

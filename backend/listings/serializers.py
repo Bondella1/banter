@@ -10,6 +10,7 @@ class SellerSerializer(serializers.ModelSerializer):
         fields = ['id','title','description','price','image','is_active','created_at','updated_at','seller','seller_username']
 
 class ListingSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, allow_null=True)
     seller = serializers.StringRelatedField()
     class Meta:
         model = Listings

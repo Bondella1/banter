@@ -49,31 +49,34 @@ export function AxiosProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     router.push('/login');
   };
-  
   // Public logout function
-  const handleLogout = (): void => {
-    performLogout();
+  const handleLogout = (): void => performLogout();
+
+  const initAuth = async () => {
+    const access = localStorage.getItem('accessToken');
+    if (access) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+      try {
+        setUser({ username: 'user', profileCompleted: true });
+        setIsAuthenticated(true);
+      } catch (e) {
+        console.error('Failed to restore auth session', e);
+        performLogout(); // Now correctly scoped
+      }
+    }
+    setLoading
   };
 
   useEffect(() => {
-    const initAuth = async () => {
-      const access = localStorage.getItem('accessToken');
-      if (access) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-        
-        try {
-          // Simplified user data for now
-          const userData: User = { username: 'user', profileCompleted: false };
-          setUser(userData);
-          setIsAuthenticated(true);
-        } catch (error) {
-          console.error('Failed to restore auth session:', error);
-          performLogout(); // Now correctly scoped
-        }
+    axios.defaults.baseURL = API;
+    const req = axios.interceptors.request.use((config) => {
+      const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
+      if (isFormData) {
+        delete config.headers['Content-Type'];
+        delete config.headers['content-type'];
       }
-      
-      setLoading(false);
-    };
+      return config;
+    });
 
     // Add a 401 interceptor to auto-refresh
     const interceptor = axios.interceptors.response.use(

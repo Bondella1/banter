@@ -1,4 +1,3 @@
-// app/listings/[id]/page.tsx
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import styles from "./listings.module.css";
@@ -19,13 +18,14 @@ type Listing = {
   };
 };
 
-export default async function ListingPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+type PageProps = {
+  params: Promise<{ id: string }>;
+}
+
+export default async function ListingPage({ params }: PageProps) {
+  const { id } = await params;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/listings/${params.id}/`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/listings/${id}/`,
     { next: { revalidate: 60 } }
   );
   if (!res.ok) return notFound();

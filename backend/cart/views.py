@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import status, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -19,24 +19,16 @@ class CartViewSet(viewsets.ViewSet):
         return Response(CartSerializer(cart).data)
 
     # POST /api/cart/items/  { "product_id": 1, "quantity": 2 }
-    @action(detail=False, methods=["post"], url_path="items")
-    def add_item(self, request):
+    @action(detail=False, methods=["post"])
+    def clear(self, request):
         cart = get_or_create_cart(request.user)
-        serializer = CartItemSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        product = serializer.validated_data["product"]
-        qty = serializer.validated_data.get("quantity", 1)
-
-        item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            item.quantity += qty
-        else:
-            item.quantity = max(1, qty)
-        item.save()
-
-        return Response(CartSerializer(cart).data, status=status.HTTP_201_CREATED)
-
-    # PATCH /api/cart/items/<item_id>/  { "quantity": 3 }
+        cart.items.all().delete()
+        return Response(CartSerializer(cart).data)
+    
+class CartItemViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    
     @action(detail=True, methods=["patch"], url_path="items")
     def update_item(self, request, pk=None):
         cart = get_or_create_cart(request.user)
@@ -64,5 +56,6 @@ class CartViewSet(viewsets.ViewSet):
     def clear(self, request):
         cart = get_or_create_cart(request.user)
         cart.items.all().delete()
+        
         return Response(CartSerializer(cart).data)
 
